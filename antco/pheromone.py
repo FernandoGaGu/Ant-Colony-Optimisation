@@ -83,6 +83,7 @@ def updateMMAS(topology: str, elite: bool = False):
     elif topology_ == 'u' or topology_ == 'undirected':
         if elite:
             return updateUndEliteMMAS
+            
         return updateUndMMAS
     else:
         assert False, 'Unrecognised topology parameter. Available options are: "directed" or "D" ' \

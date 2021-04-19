@@ -1,0 +1,7 @@
+numpy
+joblib
+cython
+matplotlib
+deap
+seaborn
+networkx

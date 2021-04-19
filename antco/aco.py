@@ -311,10 +311,10 @@ class ACO(object):
                               'not isPresent in the pheromone_update parameter.'
             if kwargs['pheromone_update']['strategy'].lower() == 'as':
                 update_strategy_ = updateAS(kwargs.get('graph_type', 'D'),
-                                            kwargs['pheromone_update'].get('bag_size', False))
+                                            kwargs['pheromone_update'].get('elite', False))
             elif kwargs['pheromone_update']['strategy'].lower() == 'mmas':
                 update_strategy_ = updateMMAS(kwargs.get('graph_type', 'D'),
-                                              kwargs['pheromone_update'].get('bag_size', False))
+                                              kwargs['pheromone_update'].get('elite', False))
             elif kwargs['pheromone_update']['strategy'].lower() == 'acs':
                 update_strategy_ = updateACS(kwargs.get('graph_type', 'D'))
             else:
@@ -341,14 +341,14 @@ class ACO(object):
 
         elif isinstance(kwargs.get('pheromone_update', None), dict):
             if kwargs['pheromone_update']['strategy'].lower() == 'as':
-                if kwargs['pheromone_update'].get('bag_size', None) is not None:
-                    return {'bag_size': kwargs['pheromone_update']['bag_size'],
+                if kwargs['pheromone_update'].get('elite', None) is not None:
+                    return {'elite': kwargs['pheromone_update']['elite'],
                             'weight': kwargs['pheromone_update'].get('weight', 1.0)}
                 return {'weight': 1.0}
             elif kwargs['pheromone_update']['strategy'].lower() == 'mmas':
-                if kwargs['pheromone_update'].get('bag_size', None) is not None:
+                if kwargs['pheromone_update'].get('elite', None) is not None:
                     return {'limits': tuple(kwargs['pheromone_update'].get('limits', (0, 1))),
-                            'bag_size': kwargs['pheromone_update']['bag_size'],
+                            'elite': kwargs['pheromone_update']['elite'],
                             'weight': kwargs['pheromone_update'].get('weight', 1.0)}
                 return {'limits': tuple(kwargs['pheromone_update'].get('limits', (0, 1))),
                         'weight': kwargs['pheromone_update'].get('weight', 1.0)}

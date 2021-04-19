@@ -1,21 +1,33 @@
-from distutils.core import setup
-from Cython.Build import cythonize
+from setuptools import find_packages, setup
 import numpy
+from Cython.Build import cythonize
+
+
+with open("README.md", 'r') as f:
+    long_description = f.read()
+
 
 # python setup.py build_ext -i
 setup(name='antco',
-      packages=['antco'],
-      version='0.1',
+      version='0.1.1 ',
       license='BSD3',
       description='Ant Colony Optimization framework',
       author='Fernando García Gutiérrez',
       author_email='fegarc05@ucm.es',
       url=None,                                 # PENDING
-      download_url=None,                        # PENDING
-      install_requires=[],                      # PENDING
+      download_url='https://github.com/FernandoGaGu/Ant-Colony-Optimisation/archive/refs/tags/0.1.tar.gz',
+      install_requires=[
+                'numpy', 
+                'joblib', 
+                'cython', 
+                'matplotlib', 
+                'deap', 
+                'seaborn', 
+                'networkx'
+            ],
       keywords=['Optimisation', 'Ant Colony Optimisation', 'Metaheuristic', 'Algorithms'],
-      packages=['antco.c_utils'],
-      ext_modules=cythonize('**/*.pyx'),
+      packages=find_packages(),
+      ext_modules=cythonize(['**/*.pyx']),
       include_dirs=[numpy.get_include()],
       classifiers=[
           'Development Status :: 4 - Beta',
