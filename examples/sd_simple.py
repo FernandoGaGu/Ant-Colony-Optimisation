@@ -71,7 +71,7 @@ beta = 1.0
 pheromone_init = 5.0
 seed = 1997
 n_jobs = 2
-pheromone_update = {'strategy': 'mmas', 'limits': (0.05, 5.0), 'graph_type': graph_type}
+pheromone_update = {'strategy': 'as', 'elite': 10, 'limits': (0.05, 5.0), 'graph_type': graph_type}
 accessory_node = True
 path_limits = (0, OPTIMAL_PATH_LENGTH+1 if accessory_node else OPTIMAL_PATH_LENGTH)
 
@@ -90,7 +90,6 @@ colony = antco.ACO(
 antco.preproc.apply(colony, accessory_node=True)
 antco.preproc.apply(colony, scale_heuristic={'min_val': 0.0, 'max_val': 1.0})
 
-print('\nACO', colony)
 
 # Run algorithm
 start = time.time()
