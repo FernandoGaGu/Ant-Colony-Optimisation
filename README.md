@@ -67,5 +67,5 @@ The code used, although it has been reviewed and tested with different test prob
 [issues-url]: https://github.com/FernandoGaGu/Ant-Colony-Optimisation/issues
 [license-shield]: https://img.shields.io/github/license/FernandoGaGu/Ant-Colony-Optimisation.svg?style=flat-square
 [license-url]: https://github.com/FernandoGaGu/Ant-Colony-Optimisation/blob/master/LICENSE
-[linkedin-shield]: https://img.shields.io/Ant-Colony-Optimisation/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/GarciaGu-Fernando

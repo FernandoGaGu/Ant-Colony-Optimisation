@@ -9,7 +9,7 @@ with open("README.md", 'r') as f:
 
 # python setup.py build_ext -i
 setup(name='antco',
-      version='0.1.3',
+      version='0.1.4',
       license='BSD3',
       description='Ant Colony Optimization framework',
       author='Fernando García Gutiérrez',
@@ -28,11 +28,11 @@ setup(name='antco',
       keywords=['Optimisation', 'Ant Colony Optimisation', 'Metaheuristic', 'Algorithms'],
       packages=find_packages(),
       ext_modules=cythonize([
-                'antco/c_metrics.pyx', 
-                'antco/c_ntools.pyx',
-                'antco/c_pheromone.pyx',
-                'antco/c_policy.pyx',
-                'antco/c_utils.pyx']),
+                './antco/c_metrics.pyx', 
+                './antco/c_ntools.pyx',
+                './antco/c_pheromone.pyx',
+                './antco/c_policy.pyx',
+                './antco/c_utils.pyx']),
       include_dirs=[numpy.get_include()],
       classifiers=[
           'Development Status :: 4 - Beta',
