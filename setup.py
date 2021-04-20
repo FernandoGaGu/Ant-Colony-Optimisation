@@ -9,12 +9,12 @@ with open("README.md", 'r') as f:
 
 # python setup.py build_ext -i
 setup(name='antco',
-      version='0.1.2',
+      version='0.1.3',
       license='BSD3',
       description='Ant Colony Optimization framework',
       author='Fernando García Gutiérrez',
       author_email='fegarc05@ucm.es',
-      url=None,                                 # PENDING
+      url='https://github.com/FernandoGaGu/Ant-Colony-Optimisation/',                           
       download_url='https://github.com/FernandoGaGu/Ant-Colony-Optimisation/archive/refs/tags/0.1.tar.gz',
       install_requires=[
                 'numpy', 
@@ -27,7 +27,12 @@ setup(name='antco',
             ],
       keywords=['Optimisation', 'Ant Colony Optimisation', 'Metaheuristic', 'Algorithms'],
       packages=find_packages(),
-      ext_modules=cythonize(['**/*.pyx']),
+      ext_modules=cythonize([
+                'antco/c_metrics.pyx', 
+                'antco/c_ntools.pyx',
+                'antco/c_pheromone.pyx',
+                'antco/c_policy.pyx',
+                'antco/c_utils.pyx']),
       include_dirs=[numpy.get_include()],
       classifiers=[
           'Development Status :: 4 - Beta',

@@ -37,9 +37,9 @@ class MaxGroupDiff(antco.optim.ObjectiveFunction):
 
 
 # Problem definition
-NODES = 120
+NODES = 101
 EDGES = 800
-OPTIMAL_PATH_LENGTH = 15
+OPTIMAL_PATH_LENGTH = 17
 NOISE = 5
 MIN_NOISE_LENGTH = 10
 MAX_NOISE_LENGTH = 20
@@ -54,17 +54,19 @@ problem = generate_problem(
 
 # Algorithm parameters
 n_ants = 100
-elite = 1
+elite = 40
 graph_type = 'undirected'
-iterations = 500
-tol = 250
-evaporation = 0.05
+iterations = 2_500
+tol = 500
+evaporation = 0.01 * 2
 alpha = 1.0
 beta = 1.0
-pheromone_init = 3.0
+pheromone_init = 5.0
 seed = 1997
-n_jobs = 4
-pheromone_update = {'strategy': 'mmas', 'limits': (0.1, 3.0), 'graph_type': graph_type}
+n_jobs = 8
+pheromone_update = {"strategy": "as", "weight": 0.00125 * 2, "graph_type": graph_type}
+Q = 0.2
+R = 0.2
 accessory_node = True
 path_limits = (0, OPTIMAL_PATH_LENGTH+1 if accessory_node else OPTIMAL_PATH_LENGTH)
 
@@ -73,21 +75,21 @@ obj_function = MaxGroupDiff(problem['adj_matrix'], problem['Gmax'] - problem['Gm
 
 # Create ACO instance
 colony = antco.ACO(
-    n_ants=n_ants, graph=problem['adj_matrix'], heuristic=problem['Gmax'] - problem['Gmin'],
+    n_ants=n_ants, graph=problem['adj_matrix'], heuristic=None,
     objective=obj_function, iterations=iterations, graph_type=graph_type, evaporation=evaporation,
     alpha=alpha, beta=beta, pheromone_init=pheromone_init, path_limits=path_limits,
-    pheromone_update=pheromone_update, n_jobs=n_jobs, seed=seed, tol=tol,
-    scaleScores=antco.tools.MinMaxScaler(max_val=2.0, max_historic=True))
+    pheromone_update=pheromone_update, n_jobs=n_jobs, seed=seed, tol=tol, Q=Q, R=R,
+    scaleScores=antco.tools.MinMaxScaler(max_val=1.0, max_historic=True))
 
 # Pre-process ACO instance
 antco.preproc.apply(colony, accessory_node=True)
-antco.preproc.apply(colony, scale_heuristic={'min_val': 0.0, 'max_val': 1.0})
+#antco.preproc.apply(colony, scale_heuristic={'min_val': 0.0, 'max_val': 1.0})
 
 print('\nACO', colony)
 
 # Run algorithm
 start = time.time()
-report = antco.algorithm.bagOfAnts(colony, bag_size=elite, out_of_bag_size=40)
+report = antco.algorithm.bagOfAnts(colony, bag_size=elite)
 end = time.time()
 print('\nTotal time: %.5f' % (end - start))
 
@@ -100,14 +102,10 @@ optimal_solution_score = objective(optimal_solution, problem['adj_matrix'], prob
 print('Solution found (%.4f): %r\nOptim solution (%.4f): %r' %
       (solution_score, solution, optimal_solution_score, optimal_solution))
 
-antco.graphics.convergence(
-    report, title='\nSolution %.4f (Optimal %.4f)\n' % (solution_score, optimal_solution_score))
-plt.show()
-"""
+
 # Save convergence results
 antco.graphics.branchingFactor(report, save_plot='./convergence/sd_BoA_BF.png')
 antco.graphics.convergence(
     report, title='\nSolution %.4f (Optimal %.4f)\n' % (solution_score, optimal_solution_score),
     save_plot='./convergence/sd_BoA_Convergence.png')
 plt.show()
-"""
