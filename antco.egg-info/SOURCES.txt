@@ -30,9 +30,10 @@ antco.egg-info/requires.txt
 antco.egg-info/top_level.txt
 antco/experimental/__init__.py
 antco/experimental/experimental.py
-antco/metaheuristic/__init__.py
-antco/metaheuristic/base.py
-antco/metaheuristic/ea.py
+antco/hybrid/__init__.py
+antco/hybrid/base.py
+antco/hybrid/ea.py
+antco/hybrid/greedy.py
 test/__init__.py
 test/ant.py
 test/c_metrics.py

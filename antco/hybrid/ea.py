@@ -1,3 +1,9 @@
+# Module that groups the evolutionary-based strategies that can be incorporated as a hybrid
+# strategy in the algorithms.
+#
+# Author: Fernando García Gutiérrez
+# Email: fegarc05@ucm.es
+#
 import numpy as np
 import matplotlib.pyplot as plt
 import random
@@ -8,6 +14,7 @@ from deap import creator
 from deap import tools
 from .base import MetaHeuristic
 from ..optim import ObjectiveFunction
+from ..ant import Ant
 
 
 class PermutationGA(MetaHeuristic):
@@ -33,7 +40,7 @@ class PermutationGA(MetaHeuristic):
         associated with that genotype.
 
     best_ants: int
-        Number of the best ants to be passed to the metaheuristic strategy.
+        Number of the best ants to be passed to the hybrid strategy.
 
     population_size: int
         Genetic algorithm population size.
@@ -57,7 +64,7 @@ class PermutationGA(MetaHeuristic):
         Genetic algorithm elite (Hall of Fame) used in deap.algorithms.eaSimple
 
     n_jobs: int, default=1
-        Number of proccessed executed in paralel.
+        Number of processes running in parallel.
 
     genetic_objective_args: dict, default=None
         If the genetic objective function requires additional parameters these must be passed to
@@ -68,14 +75,22 @@ class PermutationGA(MetaHeuristic):
         Parameter indicating whether to display the convergence graphs of the evolutionary
         algorithm at each iteration, useful for debugging and hyperparameter tuning purposes.
         Defaults to off.
+
+    add_to_old: bool, default=False
+        Parameter indicating whether to add the new solution to the set of ants or to only consider
+        the number of ants returned by this strategy for the update of the pheromone matrix. In the
+        latter case, the default behaviour, if the number of ants exploring the network is for
+        example 100 and the parameter best_ants is 10, the number of ants that will be available
+        for the pheromone matrix update will be 10. If the parameter is specified as True, the
+        number of ants available will be 100 + 10.
     """
     def __init__(self, antco_objective: ObjectiveFunction, genetic_objective: callable,
                  best_ants: int, population_size: int, crossover_prob: float, mutation_prob: float,
                  individual_mutation_prob: float, generations: int, tournsize: int = 2,
                  hof: int = None, n_jobs: int = 1, genetic_objective_args: dict = None,
-                 display_convergence: bool = False):
+                 display_convergence: bool = False, add_to_old: bool = False):
 
-        super(PermutationGA, self).__init__(antco_objective, n_jobs)
+        super(PermutationGA, self).__init__(antco_objective, add_to_old)
 
         self._best_ants = best_ants
         self._generations = generations
@@ -122,7 +137,7 @@ class PermutationGA(MetaHeuristic):
     def __str__(self):
         return self.__repr__()
 
-    def optimise(self, ants: list, scores: list) -> list:
+    def optimise(self, ants: list, scores: list) -> tuple:
         # Get the index associated with the best ants
         best_ants = np.argsort(scores)[::-1][:self._best_ants]
 
@@ -155,20 +170,10 @@ class PermutationGA(MetaHeuristic):
         self._toolbox.unregister('individual')
         self._toolbox.unregister('attr_permutation')
 
-        # Create Ants (when Hall of Fame hasn't been specified)
-        if self._hof is None:
-            improved_ants = [ants[0].new() for _ in range(self._best_ants)]
-            fitness_values = [ind.fitness.values[0] for ind in population]
-            best_fitness = np.argsort(fitness_values)[::-1][:self._best_ants]
-            for idx, ind_idx in enumerate(best_fitness):
-                improved_ants[idx].getVisitedNodes = population[ind_idx]
-        # Create Ants (using Hall of Fame )
-        else:
-            improved_ants = [ants[0].new() for _ in range(len(self._hof.items))]
-            for idx, solution in enumerate(self._hof.items):
-                improved_ants[idx].visited_nodes = solution
-
-        return improved_ants
+        return processPopulation(best_ants=self._best_ants,
+                                 ant_prototype=ants[0],
+                                 population=population,
+                                 hof=self._hof)
 
     @classmethod
     def create_permutation_ind(cls, toolbox: base.Toolbox, fitness_function: callable,
@@ -226,7 +231,7 @@ class SetGA(MetaHeuristic):
     Class implementing a integer-based evolutionary strategy. This class allows optimisation to be
     performed on a genotype of non-repeating integer values of variable length.
 
-        Parameters
+    Parameters
     ----------
     antco_objective: antco.optim.ObjectiveFunction
         Objective function defined using the antco.optim.ObjectiveFunction interface.
@@ -237,7 +242,7 @@ class SetGA(MetaHeuristic):
         associated with that genotype.
 
     best_ants: int
-        Number of the best ants to be passed to the metaheuristic strategy.
+        Number of the best ants to be passed to the hybrid strategy.
 
     population_size: int
         Genetic algorithm population size.
@@ -258,7 +263,7 @@ class SetGA(MetaHeuristic):
         Genetic algorithm elite (Hall of Fame) used in deap.algorithms.eaSimple
 
     n_jobs: int, default=1
-        Number of proccessed executed in paralel.
+        Number of processes running in parallel.
 
     genetic_objective_args: dict, default=None
         If the genetic objective function requires additional parameters these must be passed to
@@ -269,13 +274,22 @@ class SetGA(MetaHeuristic):
         Parameter indicating whether to display the convergence graphs of the evolutionary
         algorithm at each iteration, useful for debugging and hyperparameter tuning purposes.
         Defaults to off.
+
+    add_to_old: bool, default=False
+        Parameter indicating whether to add the new solution to the set of ants or to only consider
+        the number of ants returned by this strategy for the update of the pheromone matrix. In the
+        latter case, the default behaviour, if the number of ants exploring the network is for
+        example 100 and the parameter best_ants is 10, the number of ants that will be available
+        for the pheromone matrix update will be 10. If the parameter is specified as True, the
+        number of ants available will be 100 + 10.
     """
     def __init__(self, antco_objective: ObjectiveFunction, genetic_objective: callable,
                  best_ants: int, population_size: int, crossover_prob: float, mutation_prob: float,
                  generations: int, tournsize: int = 2, hof: int = None, n_jobs: int = 1,
-                 genetic_objective_args: dict = None, display_convergence: bool = False):
+                 genetic_objective_args: dict = None, display_convergence: bool = False,
+                 add_to_old: bool = False):
 
-        super(SetGA, self).__init__(antco_objective, n_jobs)
+        super(SetGA, self).__init__(antco_objective, add_to_old)
 
         self._best_ants = best_ants
         self._generations = generations
@@ -320,7 +334,7 @@ class SetGA(MetaHeuristic):
     def __str__(self):
         return self.__repr__()
 
-    def optimise(self, ants: list, scores: list) -> list:
+    def optimise(self, ants: list, scores: list) -> tuple:
         # Get the index associated with the best ants
         best_ants = np.argsort(scores)[::-1][:self._best_ants]
         possible_values = np.unique([   # Select unique nodes
@@ -359,20 +373,10 @@ class SetGA(MetaHeuristic):
         self._toolbox.unregister('attr_set')
         self._toolbox.unregister('mutate')
 
-        # Create Ants (when Hall of Fame hasn't been specified)
-        if self._hof is None:
-            improved_ants = [ants[0].new() for _ in range(self._best_ants)]
-            fitness_values = [ind.fitness.values[0] for ind in population]
-            best_fitness = np.argsort(fitness_values)[::-1][:self._best_ants]
-            for idx, ind_idx in enumerate(best_fitness):
-                improved_ants[idx].getVisitedNodes = list(population[ind_idx])
-        # Create Ants (using Hall of Fame )
-        else:
-            improved_ants = [ants[0].new() for _ in range(len(self._hof.items))]
-            for idx, solution in enumerate(self._hof.items):
-                improved_ants[idx].getVisitedNodes = list(solution)
-
-        return improved_ants
+        return processPopulation(best_ants=self._best_ants,
+                                 ant_prototype=ants[0],
+                                 population=population,
+                                 hof=self._hof)
 
     @classmethod
     def create_set_ind(cls, toolbox: base.Toolbox, fitness_function: callable,
@@ -471,3 +475,27 @@ def initSetGenotype(possible_values: list):
     """
     num_elements = random.randint(2, len(possible_values) - 1)
     return np.random.choice(possible_values, size=num_elements, replace=False).tolist()
+
+
+def processPopulation(best_ants: int, ant_prototype: Ant, population: list,
+                      hof: tools.HallOfFame or None = None) -> tuple:
+    """ Function in responsible for creating the ants to be returned by the metaheuristic strategies
+    according to the interface defined in antco.hybrid.base.Metaheuristic from the populations of
+    individuals of the evolutionary strategies. """
+
+    if hof is None:  # Create Ants (when Hall of Fame hasn't been specified)
+        improved_ants = [ant_prototype.new() for _ in range(best_ants)]
+        improved_scores = [-float('inf') for _ in range(best_ants)]
+        fitness_values = [ind.fitness.values[0] for ind in population]
+        best_fitness = np.argsort(fitness_values)[::-1][:best_ants]
+        for idx, ind_idx in enumerate(best_fitness):
+            improved_ants[idx].visited_nodes = list(population[ind_idx])
+            improved_scores[idx] = fitness_values[idx]
+    else:  # Create Ants (using Hall of Fame )
+        improved_ants = [ant_prototype.new() for _ in range(len(hof.items))]
+        improved_scores = [-float('inf') for _ in range(len(hof.items))]
+        for idx, solution in enumerate(hof.items):
+            improved_ants[idx].visited_nodes = list(solution)
+            improved_scores[idx] = solution.fitness.values[0]
+
+    return improved_ants, improved_scores

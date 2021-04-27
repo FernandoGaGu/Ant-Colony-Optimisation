@@ -60,8 +60,8 @@ iterations = 500
 evaporation = 0.1
 alpha = 1.0
 beta = 1.0
-pheromone_init = 1.0
-pheromone_update = {'strategy': 'as', 'weight': 0.1, 'graph_type': graph_type}
+pheromone_init = 5.0
+pheromone_update = {'strategy': 'mmas', 'weight': 0.6, 'limits': (0.05, 10.0), 'graph_type': graph_type}
 seed = 1997
 tol = 200
 n_jobs = 2
@@ -110,9 +110,9 @@ best_solution_distance = MinDistance(distance_matrix).evaluate(report.best_solut
 print('\nLength of the path: %.4f (Optimal length: %.4f)\n' % (best_solution_distance, optimal_value))
 
 # Save convergence results
-antco.graphics.branchingFactor(report, save_plot='./convergence/att48_GA_BF.png')
+antco.graphics.branchingFactor(report, save_plot='./convergence/att48_GA_MMAS_BF.png')
 plt.show()
 antco.graphics.convergence(
     report, title='\nSolution %.4f (Optimal %.4f)\n' % (best_solution_distance, optimal_value),
-    save_plot='./convergence/att48_GA_Convergence.png')
+    save_plot='./convergence/att48_GA_MMAS_Convergence.png')
 plt.show()

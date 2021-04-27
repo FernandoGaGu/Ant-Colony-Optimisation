@@ -561,15 +561,15 @@ def getRandomWalk(initial_position: int, current_path: np.ndarray, adjacency_mat
     
         if len(movements) == 1:
             mov = movements[0]
-        
-        elif R is not None and np.random.uniform() < R:   # Random selection of the move
-            mov = np.random.choice(movements)
-            
+    
         elif Q is not None and np.random.uniform() < Q:    # Deterministic selection of the move
             probs = stochasticAS(
                 initial_position, np.array(movements), heuristic, pheromone, alpha)        
             mov = movements[np.argmax(probs)]
-            
+
+        elif R is not None and np.random.uniform() < R:   # Random selection of the move
+            mov = np.random.choice(movements)
+                       
         else:  # Stochastic selection of the next move            
             probs = stochasticAS(
                 initial_position, np.array(movements), heuristic, pheromone, alpha)
@@ -820,8 +820,7 @@ def generatePathsACS(ants: list, graph: np.ndarray, H: np.ndarray, P: np.ndarray
     return new_ants
 
 
-def evaluateAnts(ants: list, objectiveFunction: ObjectiveFunction, parallel_evaluation: bool,
-                 n_jobs: int = 1) -> np.ndarray:
+def evaluateAnts(ants: list, objectiveFunction: ObjectiveFunction) -> np.ndarray:
     """
     Function that performs the evaluation of the paths traversed by the ants using the defined cost
     function.
@@ -835,25 +834,12 @@ def evaluateAnts(ants: list, objectiveFunction: ObjectiveFunction, parallel_eval
         Subclass of antco.optim.ObjectiveFunction defined by the user. This function will be
         maximized.
 
-    parallel_evaluation: bool
-        Parameter indicating whether to carry out the evaluation in parallel.
-
-    n_jobs: int
-        If parallel_evaluation is True, number of processes to run in parallel.
-
     Returns
     -------
     :np.ndarray (len(ants)), dtype=np.float64
         Scores associated with the ants.
     """
-    if parallel_evaluation:
-        ant_scores = joblib.Parallel(n_jobs=n_jobs)(
-            joblib.delayed(objectiveFunction)((ant, idx)) for idx, ant in enumerate(ants))
-        # HACK: Parallel execution does not return indexes in order
-        for score, idx in ant_scores:
-            ant_scores[idx] = score
-    else:
-        ant_scores = np.array([
+    ant_scores = np.array([
             objectiveFunction((ant, idx)) for idx, ant in enumerate(ants)], dtype=np.float64)[:, 0]
 
     return ant_scores

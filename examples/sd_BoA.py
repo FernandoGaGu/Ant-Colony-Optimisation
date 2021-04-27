@@ -1,5 +1,12 @@
 """
-Same problem as presented in the sd_simple.py script but with more difficulty.
+The problem presented consists of finding the sub-graph that maximises the mean of the values in a
+given group (denoted as Gmax) by minimising the mean of the values in another group (denoted as
+Gmin), in essence maximising the difference between Gmax and Gmin subjected to a graph structure.
+
+This script uses the basic version of the Ant Colony Optimization algorithm, assumes knowledge of
+the optimal sub-graph size and demonstrates that the algorithm is able to find the optimal sub-graph.
+
+The results have been saved in the ./convergence folder.
 """
 import time
 import numpy as np
@@ -36,6 +43,7 @@ class MaxGroupDiff(antco.optim.ObjectiveFunction):
         return objective(nodes, self._adj_matrix, self._diff)[0]
 
 
+# ------------------------------------------------------------------------------------------------ #
 # Problem definition
 NODES = 101
 EDGES = 800
@@ -44,6 +52,27 @@ NOISE = 5
 MIN_NOISE_LENGTH = 10
 MAX_NOISE_LENGTH = 20
 SEED = 1997 + 1
+# ------------------------------------------------------------------------------------------------ #
+
+# ------------------------------------------------------------------------------------------------ #
+# Algorithm parameters
+n_ants = 100
+elite = 40
+graph_type = 'undirected'
+iterations = 2_500
+tol = 500
+evaporation = 0.05
+alpha = 1.0
+beta = 1.0
+pheromone_init = 5.0
+seed = 1997
+n_jobs = 4
+pheromone_update = {"strategy": "as", "weight": 0.075, "graph_type": graph_type}
+Q = None
+R = None
+accessory_node = True
+# ------------------------------------------------------------------------------------------------ #
+
 
 problem = generate_problem(
     NODES, EDGES, OPTIMAL_PATH_LENGTH, NOISE, MIN_NOISE_LENGTH, MAX_NOISE_LENGTH, SEED)
@@ -52,22 +81,6 @@ problem = generate_problem(
 # Display Gmin and Gmax values
 #display_group_values(problem)
 
-# Algorithm parameters
-n_ants = 100
-elite = 40
-graph_type = 'undirected'
-iterations = 2_500
-tol = 500
-evaporation = 0.01 * 2
-alpha = 1.0
-beta = 1.0
-pheromone_init = 5.0
-seed = 1997
-n_jobs = 8
-pheromone_update = {"strategy": "as", "weight": 0.00125 * 2, "graph_type": graph_type}
-Q = 0.2
-R = 0.2
-accessory_node = True
 path_limits = (0, OPTIMAL_PATH_LENGTH+1 if accessory_node else OPTIMAL_PATH_LENGTH)
 
 # Create objectiveFunction function
@@ -84,8 +97,6 @@ colony = antco.ACO(
 # Pre-process ACO instance
 antco.preproc.apply(colony, accessory_node=True)
 #antco.preproc.apply(colony, scale_heuristic={'min_val': 0.0, 'max_val': 1.0})
-
-print('\nACO', colony)
 
 # Run algorithm
 start = time.time()

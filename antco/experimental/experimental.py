@@ -18,7 +18,7 @@ from ..algorithm import updateReportWithBest
 warnings.filterwarnings('error')
 
 
-def antColonySystem(aco_obj: ACO, parallel_evaluation: bool = False, scores_decay: DecaySchedule = None,
+def antColonySystem(aco_obj: ACO, scores_decay: DecaySchedule = None,
                     evaporation_decay: DecaySchedule = None, report: Report = None,
                     save_pheromones: bool = True, verbose: bool = True) -> Report:
     """
@@ -34,11 +34,6 @@ def antColonySystem(aco_obj: ACO, parallel_evaluation: bool = False, scores_deca
     aco_obj: antco.ACO
         Initialised antco.ACO instance, for more information on this type of object use:
         help(antco.ACO)
-
-    parallel_evaluation: bool, default=False  [IN TESTING]
-        Parameter indicating whether to perform a parallel evaluation of the cost function. When
-        the compuational cost of the function is high the performance will increase, however, if the
-        compuational cost is moderate this will result in a lower performance of the algorithm.
 
     scores_decay: antco.optim.DecaySchedule subclass, default=None
         Instance of a antco.optim.DecaySchedule representing a decay schedule that will applied to
@@ -126,9 +121,7 @@ def antColonySystem(aco_obj: ACO, parallel_evaluation: bool = False, scores_deca
             pher_init=pher_init_val, Q=Q, exp_heuristic=False)
 
         # Evaluate ant paths using the objectiveFunction function (it will be maximized)
-        ant_scores = evaluateAnts(
-            ants=ants, objectiveFunction=objectiveFunction, parallel_evaluation=parallel_evaluation,
-            n_jobs=n_jobs)
+        ant_scores = evaluateAnts(ants=ants, objectiveFunction=objectiveFunction)
 
         # Update best score and save best solution
         new_best = updateReportWithBest(
@@ -180,5 +173,3 @@ def antColonySystem(aco_obj: ACO, parallel_evaluation: bool = False, scores_deca
         current_iteration += 1
 
     return report
-
-

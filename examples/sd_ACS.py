@@ -6,8 +6,6 @@ Gmin), in essence maximising the difference between Gmax and Gmin subjected to a
 This script uses the basic version of the Ant Colony Optimization algorithm, assumes knowledge of
 the optimal sub-graph size and demonstrates that the algorithm is able to find the optimal sub-graph.
 
-The results have been saved in the ./convergence folder as SD_basic_BF.png and
-SD_basic_Convergence.png
 """
 import time
 import numpy as np
@@ -94,7 +92,7 @@ print('\nACO', colony)
 
 # Run algorithm
 start = time.time()
-report = antco.algorithm.antColonySystem(colony)
+report = antco.experimental.antColonySystem(colony)
 end = time.time()
 print('\nTotal time: %.5f' % (end - start))
 

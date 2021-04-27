@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from problem_utils import parse
 import sys; sys.path.append('..')
 import antco
-import antco.hybrid as meta
+from antco import hybrid
 
 
 OPTIMAL_PATH = [
@@ -80,8 +80,8 @@ ea_n_jobs = 1
 obj_function = MinDistance(distance_matrix)
 
 # Create hybrid
-metaheuristic = meta.ea.PermutationGA(
-    antco_objective=obj_function, genetic_objective=objective, best_ants=best_ants,
+metaheuristic = hybrid.ea.PermutationGA(
+    add_to_old=True, antco_objective=obj_function, genetic_objective=objective, best_ants=best_ants,
     population_size=population_size, crossover_prob=crossover_prob, mutation_prob=mutation_prob,
     individual_mutation_prob=individual_mutation_prob, generations=generations, tournsize=tournsize,
     hof=elite, n_jobs=ea_n_jobs, genetic_objective_args={'cost_matrix': distance_matrix})
@@ -93,6 +93,7 @@ colony = antco.ACO(
     beta=beta, pheromone_init=pheromone_init, path_limits=(n_nodes-1, n_nodes), tol=tol,
     pheromone_update=pheromone_update, n_jobs=n_jobs, seed=seed,
     scaleScores=antco.tools.MinMaxScaler(max_val=2.0, max_historic=True))
+print('Colony:', colony)
 
 # Pre-process ACO instance
 antco.preproc.apply(colony, scale_heuristic={'min_val': 0.0, 'max_val': 1.0})
@@ -100,7 +101,8 @@ antco.preproc.apply(colony, scale_heuristic={'min_val': 0.0, 'max_val': 1.0})
 # Run algorithm
 print(f'\nNumber of cities: {n_nodes}\n')
 start = time.time()
-report = antco.algorithm.basic(colony, metaheuristic=metaheuristic)
+report = antco.algorithm.bagOfAnts(colony, metaheuristic=metaheuristic, bag_size=elite,
+                                      out_of_bag_size=elite//2)
 end = time.time()
 print('\nTotal time: %.5f' % (end - start))
 
@@ -110,9 +112,9 @@ best_solution_distance = MinDistance(distance_matrix).evaluate(report.best_solut
 print('\nLength of the path: %.4f (Optimal length: %.4f)\n' % (best_solution_distance, optimal_value))
 
 # Save convergence results
-antco.graphics.branchingFactor(report, save_plot='./convergence/att48_GA_BF.png')
+antco.graphics.branchingFactor(report, save_plot='./convergence/att48_GA_BoA_BF.png')
 plt.show()
 antco.graphics.convergence(
     report, title='\nSolution %.4f (Optimal %.4f)\n' % (best_solution_distance, optimal_value),
-    save_plot='./convergence/att48_GA_Convergence.png')
+    save_plot='./convergence/att48_GA_BoA_Convergence.png')
 plt.show()

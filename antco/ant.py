@@ -89,7 +89,7 @@ class Ant(object):
     information) the list of nodes visited by the ant can be accessed using the attribute
     'visited_nodes':
 
-    >>> ant.getVisitedNodes
+    >>> ant.visited_nodes
     In [8]: array([3, 0, 0, 5, 6])
     >>> adj_matrix = ant.adj_matrix
     In [9]:
@@ -110,7 +110,7 @@ class Ant(object):
     In [10]: 1
     >>> new_ant.max_length
     In [11]: 10
-    >>> new_ant.getVisitedNodes
+    >>> new_ant.visited_nodes
     In [12]: array([])
     """
     def __init__(self, l_min: int or float, l_max: int or float, graph_type: str = 'directed',
@@ -212,7 +212,6 @@ class Ant(object):
 
         if self._mapped:
             return self._adjacency_list
-
         self._adjacency_list = self._toAdjList(self._initial_position, self._adjacency_matrix)
         self._mapped = True
 

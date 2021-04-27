@@ -62,8 +62,8 @@ beta = 1.0
 pheromone_init = 5.0
 seed = 1997
 tol = 200
-n_jobs = 8
-pheromone_update = {'strategy': 'mmas', 'limits': (0.05, 5.0), 'graph_type': graph_type}
+n_jobs = 2
+pheromone_update = {'strategy': 'mmas', 'weight': 0.6, 'limits': (0.05, 10.0), 'graph_type': graph_type}
 aco_obj = MinDistance(distance_matrix, objective)
 
 # Create ACO instance

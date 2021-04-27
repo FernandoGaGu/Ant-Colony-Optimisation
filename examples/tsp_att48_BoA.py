@@ -63,7 +63,7 @@ beta = 1.0
 pheromone_init = 20.0
 seed = 1997
 tol = 200
-n_jobs = 1
+n_jobs = 2
 pheromone_update = {'strategy': 'as', 'weight': 0.1, 'graph_type': graph_type}
 aco_obj = MinDistance(distance_matrix, objective)
 
@@ -96,6 +96,6 @@ antco.graphics.branchingFactor(report, save_plot='./convergence/att48_BoA_BF.png
 plt.show()
 antco.graphics.convergence(
     report, title='\nSolution %.4f (Optimal %.4f)\n' % (best_solution_distance, optimal_value),
-    save_plot='./convergence/att48_basic_BoA_Convergence.png')
+    save_plot='./convergence/att48_BoA_Convergence.png')
 plt.show()
 

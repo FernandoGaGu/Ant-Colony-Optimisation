@@ -214,7 +214,7 @@ cpdef np.ndarray[INT64_DTYPE_t, ndim=1] toUndAdjList(int init_pos,
     return adj_list[:idx]
 
 
-cpdef list getValidPaths(int position, np.ndarray[INT64_DTYPE_t, ndim=1] current_path,
+cpdef list getValidPiaths(int position, np.ndarray[INT64_DTYPE_t, ndim=1] current_path,
                          np.ndarray[INT8_DTYPE_t, ndim=2] adj_matrix):
     """
     Function that according to the binary adjacency matrix that has been traversed by an ant and
