@@ -108,7 +108,7 @@ class GreedySearchOP(MetaHeuristic):
         improved_scores = []
 
         if self._n_jobs > 1:
-            solution_score = joblib.Parallel(n_jobs=self._n_jobs)(
+            solution_score = joblib.Parallel(n_jobs=self._n_jobs, backend='loky')(
                 joblib.delayed(greedySearch)(
                     self.evaluate.getVisitedNodes(ants[idx]), self._depth, self._adj_matrix,
                     self._objective, self._objective_args, scores[idx]) for idx in best_ants_indices)

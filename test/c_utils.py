@@ -1,4 +1,5 @@
 import numpy as np
+import random
 from antco import minMaxScaling, rouletteWheel
 
 
@@ -38,13 +39,13 @@ def test_roulette_wheel():
     np.random.seed(1997)
     probs = np.array([0.0, 1.0, 0.0, 0.0, 0.0])
 
-    index = rouletteWheel(probs)
+    index = rouletteWheel(probs, random.random())
     assert index == 1, 'FAILED TEST: antco.utils.rouletteWheel()'
 
     probs = np.zeros(shape=1000)
     probs[-1] = 1.0
 
-    index = rouletteWheel(probs)
+    index = rouletteWheel(probs, random.random())
 
     assert index == 999, 'FAILED TEST: antco.utils.rouletteWheel()'
 

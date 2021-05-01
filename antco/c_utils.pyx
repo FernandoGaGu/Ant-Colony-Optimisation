@@ -4,8 +4,8 @@
 # Author: Fernando García Gutiérrez
 # Email: fegarc05@ucm.es
 #
-from libc.stdlib cimport rand, srand, RAND_MAX
-from libc.time cimport time
+#from libc.stdlib cimport rand, srand, RAND_MAX
+#from libc.time cimport time
 
 cimport numpy as np
 import numpy as np
@@ -17,7 +17,7 @@ ctypedef np.int8_t INT_DTYPE_t
 ctypedef np.float64_t DOUBLE_DTYPE_t
 
 
-srand(time(NULL))
+#srand(time(NULL))
 
 
 cpdef np.ndarray[DOUBLE_DTYPE_t, ndim=2] minMaxScaling(
@@ -76,7 +76,7 @@ cpdef np.ndarray[DOUBLE_DTYPE_t, ndim=2] minMaxScaling(
     return scaled_matrix
 
 
-cpdef int rouletteWheel(double[:] probs):
+cpdef int rouletteWheel(double[:] probs, double shoot):
     """
     Function that given an array of probabilities makes a roulette wheel to choose an index.
     In this function it is not necessary that the probabilities add up to exactly 1, yhe function 
@@ -86,6 +86,8 @@ cpdef int rouletteWheel(double[:] probs):
     ----------
     probs: double[:]
         Array of probabilities used to select the indices.      
+    
+    shoot: double
 
 
     Returns
@@ -93,7 +95,7 @@ cpdef int rouletteWheel(double[:] probs):
     :int
         Index selected randomly according to the probabilities indicated.    
     """
-    cdef float shoot = rand() / (RAND_MAX - 1.0)
+    #cdef float shoot = rand() / (RAND_MAX - 1.0)
     cdef int i, length = len(probs)
     cdef double cumulative_probs = 0.0, current_prob = 0.0
 

@@ -109,19 +109,20 @@ def undirected_step():
 
     for n_jobs in range(1, 3):
         ants = [Ant(l_min=0, l_max=max_lim, graph_type=graph_type) for _ in range(n_ants)]
+        seeds = np.random.randint(np.iinfo(np.int32).max, size=len(ants))
 
         if n_jobs == 1:
             paths = []
-            for ant, seed in zip(ants, np.random.randint(9999, size=len(ants))):
+            for ant, seed in zip(ants, seeds):
                 paths.append(step(
                     ant=ant, adjacency_matrix=adjacency_matrix, heuristic=heuristic,
                     pheromone=pheromone, alpha=alpha, beta=beta, exp_heuristic=True,
-                    Q=0.0001, R=0.0001))
+                    Q=0.0001, R=0.0001, seed=seed))
         else:
             paths = joblib.Parallel(n_jobs=n_jobs)(
                 joblib.delayed(step)(
                     ant, adjacency_matrix, heuristic, pheromone, alpha, beta, True, 0.0001, 0.0001)
-                for ant, seed in zip(ants, np.random.randint(9999, size=len(ants))))
+                for ant, seed in zip(ants, seeds))
 
     print('SUCCESSFUL TEST: antco.colony.step() [UNDIRECTED]')
 
@@ -148,19 +149,22 @@ def directed_step():
 
     for n_jobs in range(1, 3):
         ants = [Ant(l_min=0, l_max=max_lim, graph_type=graph_type) for _ in range(n_ants)]
+        seeds = np.random.randint(np.iinfo(np.int32).max, size=len(ants))
 
         if n_jobs == 1:
             paths = []
-            for ant, seed in zip(ants, np.random.randint(9999, size=len(ants))):
+            for ant, seed in zip(ants, seeds):
                 paths.append(step(
                     ant=ant, adjacency_matrix=adjacency_matrix, heuristic=heuristic,
                     pheromone=pheromone, alpha=alpha, beta=beta, exp_heuristic=True,
-                    Q=0.0001, R=0.0001))
+                    Q=0.0001, R=0.0001, seed=seed))
         else:
             paths = joblib.Parallel(n_jobs=n_jobs)(
                 joblib.delayed(step)(
-                    ant, adjacency_matrix, heuristic, pheromone, alpha, beta, True, 0.0001, 0.0001)
-                for ant, seed in zip(ants, np.random.randint(9999, size=len(ants))))
+                    ant=ant, adjacency_matrix=adjacency_matrix, heuristic=heuristic,
+                    pheromone=pheromone, alpha=alpha, beta=beta, exp_heuristic=True,
+                    Q=0.0001, R=0.0001, seed=seed)
+                for ant, seed in zip(ants, seeds))
 
     print('SUCCESSFUL TEST: antco.colony.step() [DIRECTED]')
 

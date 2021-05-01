@@ -160,10 +160,10 @@ def basic(aco_obj: ACO, metaheuristic: MetaHeuristic = None, apply_meta_each: in
     it_without_improvements = 0
     best_score = -float('inf')
     while current_iteration <= iterations:
-
+        seeds = np.random.randint(np.iinfo(np.int32).max, size=len(ants))
         ants = generatePaths(  # Graph exploration
             ants=ants, graph=graph, H=H, P=P, alpha=alpha, beta=beta, Q=Q, R=R, n_jobs=n_jobs,
-            exp_heuristic=False)
+            exp_heuristic=False, seeds=seeds)
 
         if metaheuristic is None or current_iteration % apply_meta_each != 0:
             # Evaluate ant paths using the objectiveFunction function (it will be maximized)
@@ -349,10 +349,10 @@ def bagOfAnts(aco_obj: ACO, bag_size: int, out_of_bag_size: int = 0,
     it_without_improvements = 0
     best_score = -float('inf')
     while current_iteration <= iterations:
-
+        seeds = np.random.randint(np.iinfo(np.int32).max, size=len(ants))
         ants = generatePaths(   # Graph exploration
             ants=ants, graph=graph, H=H, P=P, alpha=alpha, beta=beta, Q=Q, R=R,
-            n_jobs=n_jobs, exp_heuristic=False)
+            n_jobs=n_jobs, exp_heuristic=False, seeds=seeds)
 
         if metaheuristic is None or current_iteration % apply_meta_each != 0:
             # Evaluate ant paths using the objectiveFunction function (it will be maximized)

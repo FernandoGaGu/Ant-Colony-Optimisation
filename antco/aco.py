@@ -8,6 +8,7 @@ import numpy as np
 import joblib
 import sys
 import warnings
+import random
 from .ant import Ant, randomInit
 from .optim import ObjectiveFunction
 from .pheromone import updateAS, updateMMAS, updateACS, updateUndLocalPher, updateDirLocalPher
@@ -562,19 +563,18 @@ def getRandomWalk(initial_position: int, current_path: np.ndarray, adjacency_mat
         if len(movements) == 1:
             mov = movements[0]
     
-        elif Q is not None and np.random.uniform() < Q:    # Deterministic selection of the move
+        elif Q is not None and random.random() < Q:    # Deterministic selection of the move
             probs = stochasticAS(
                 initial_position, np.array(movements), heuristic, pheromone, alpha)        
             mov = movements[np.argmax(probs)]
 
-        elif R is not None and np.random.uniform() < R:   # Random selection of the move
-            mov = np.random.choice(movements)
-                       
+        elif R is not None and random.random() < R:   # Random selection of the move
+            mov = random.choice(movements)
         else:  # Stochastic selection of the next move            
             probs = stochasticAS(
                 initial_position, np.array(movements), heuristic, pheromone, alpha)
 
-            mov = movements[rouletteWheel(probs)]
+            mov = movements[rouletteWheel(probs, random.random())]
 
         current_path = np.append(current_path, mov)
         movements = getValidPaths(mov, current_path, adjacency_matrix)
@@ -585,7 +585,7 @@ def getRandomWalk(initial_position: int, current_path: np.ndarray, adjacency_mat
 
 
 def step(ant: Ant, adjacency_matrix: np.ndarray, heuristic: np.ndarray, pheromone: np.ndarray,
-         alpha: float, beta: float, exp_heuristic: bool = True, Q: float = None, 
+         alpha: float, beta: float, seed: int, exp_heuristic: bool = True, Q: float = None,
          R: float = None) -> Ant:
     """
     Basic step function which ensures that an ant makes a path around the graph. The steps carried
@@ -621,6 +621,9 @@ def step(ant: Ant, adjacency_matrix: np.ndarray, heuristic: np.ndarray, pheromon
         Analogous to the alpha parameter, the beta parameter reference the importance given
         to the heuristic information.
 
+    seed: int
+        Random seed.
+
     exp_heuristic: bool, default=False
         Boolean value indicating whether to exponentiate the heuristic matrix to beta or not. By
         default it will not be exponentiated. It will be assumed that it has been previously
@@ -645,6 +648,9 @@ def step(ant: Ant, adjacency_matrix: np.ndarray, heuristic: np.ndarray, pheromon
     if exp_heuristic:
         heuristic = np.power(heuristic, beta)
 
+    random.seed(seed)
+    np.random.seed(seed)
+
     new_ant = Ant(l_min=ant.min_length, l_max=ant.max_length, graph_type=ant.representation,
                   check_params=False)
 
@@ -667,7 +673,8 @@ def step(ant: Ant, adjacency_matrix: np.ndarray, heuristic: np.ndarray, pheromon
 
 
 def generatePaths(ants: list, graph: np.ndarray, H: np.ndarray, P: np.ndarray, alpha: float,
-                  beta: float, Q: float, R: float, n_jobs: int, exp_heuristic: bool = True) -> list:
+                  beta: float, Q: float, R: float, n_jobs: int, seeds: np.ndarray,
+                  exp_heuristic: bool = True) -> list:
     """
     Function that performs the exploration of the network according to the values of the heuristic
     and pheromone matrix.
@@ -707,6 +714,9 @@ def generatePaths(ants: list, graph: np.ndarray, H: np.ndarray, P: np.ndarray, a
     n_jobs: int
         Number of processes to run in parallel.
 
+    seeds: np.ndarray
+        Random seeds.
+
     exp_heuristic: bool, default=True
         Parameter indicating whether to exponentiate the heuristic matrix to the beta value. By
         default it will not be assumed that the exponentiation has been precomputed.
@@ -718,13 +728,13 @@ def generatePaths(ants: list, graph: np.ndarray, H: np.ndarray, P: np.ndarray, a
     """
     if n_jobs == 1:
         ants = [
-            step(ant, graph, H, P, alpha, beta, exp_heuristic=exp_heuristic, Q=Q, R=R)
-            for ant in ants]
+            step(ant, graph, H, P, alpha, beta, exp_heuristic=exp_heuristic, Q=Q, R=R, seed=seed)
+            for ant, seed in zip(ants, seeds)]
     else:
-        ants = joblib.Parallel(n_jobs=n_jobs)(
+        ants = joblib.Parallel(n_jobs=n_jobs, backend='loky')(
             joblib.delayed(step)(
-                ant, graph, H, P, alpha, beta, exp_heuristic=exp_heuristic, Q=Q, R=R)
-            for ant in ants)
+                ant, graph, H, P, alpha, beta, exp_heuristic=exp_heuristic, Q=Q, R=R, seed=seed)
+            for ant, seed in zip(ants, seeds))
 
     return ants
 
