@@ -9,7 +9,7 @@ with open("README.md", 'r') as f:
 
 # python setup.py build_ext -i
 setup(name='antco',
-      version='0.1.7',
+      version='0.1.8',
       license='BSD3',
       description='Ant Colony Optimization framework',
       author='Fernando García Gutiérrez',

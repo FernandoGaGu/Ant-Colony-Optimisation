@@ -201,7 +201,7 @@ def greedySearch(nodes: list or np.ndarray, depth: int, adj_matrix: np.ndarray,
             substitutes = list(set([e for lt in substitutes for e in lt if not e == n1]))
 
             for n2 in substitutes:
-                new_score = objective(pruned_solution + [n2], **objective_args)
+                new_score = objective(np.array(pruned_solution + [n2]), **objective_args)
                 if new_score > best_score:
                     best_solution = pruned_solution + [n2]
                     best_score = new_score
