@@ -126,6 +126,7 @@ def basic(aco_obj: ACO, metaheuristic: MetaHeuristic = None, apply_meta_each: in
     beta = aco_obj.beta
     if aco_obj.precompute_heuristic:
         H = np.power(H, beta)
+    exp_heuristic = True if aco_obj.exp_heuristic else False
     pheromone_update_kw = aco_obj.pheromone_update_kw
     rho = pheromone_update_kw['rho'];
     del pheromone_update_kw['rho']  # Get evaporation parameter
@@ -163,7 +164,7 @@ def basic(aco_obj: ACO, metaheuristic: MetaHeuristic = None, apply_meta_each: in
         seeds = np.random.randint(np.iinfo(np.int32).max, size=len(ants))
         ants = generatePaths(  # Graph exploration
             ants=ants, graph=graph, H=H, P=P, alpha=alpha, beta=beta, Q=Q, R=R, n_jobs=n_jobs,
-            exp_heuristic=False, seeds=seeds)
+            exp_heuristic=exp_heuristic, seeds=seeds)
 
         if metaheuristic is None or current_iteration % apply_meta_each != 0:
             # Evaluate ant paths using the objectiveFunction function (it will be maximized)
@@ -314,6 +315,7 @@ def bagOfAnts(aco_obj: ACO, bag_size: int, out_of_bag_size: int = 0,
     beta = aco_obj.beta
     if aco_obj.precompute_heuristic:
         H = np.power(H, beta)
+    exp_heuristic = True if aco_obj.exp_heuristic else False
     pheromone_update_kw = aco_obj.pheromone_update_kw
     rho = pheromone_update_kw['rho']; del pheromone_update_kw['rho']  # Get evaporation parameter
     updatePheromones = aco_obj.updatePheromones
@@ -352,7 +354,7 @@ def bagOfAnts(aco_obj: ACO, bag_size: int, out_of_bag_size: int = 0,
         seeds = np.random.randint(np.iinfo(np.int32).max, size=len(ants))
         ants = generatePaths(   # Graph exploration
             ants=ants, graph=graph, H=H, P=P, alpha=alpha, beta=beta, Q=Q, R=R,
-            n_jobs=n_jobs, exp_heuristic=False, seeds=seeds)
+            n_jobs=n_jobs, exp_heuristic=exp_heuristic, seeds=seeds)
 
         if metaheuristic is None or current_iteration % apply_meta_each != 0:
             # Evaluate ant paths using the objectiveFunction function (it will be maximized)

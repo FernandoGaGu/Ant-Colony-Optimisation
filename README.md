@@ -37,7 +37,7 @@ The simplest way to install the library is via pip:
 pip install antco
 ```
 
-To use the lastest version of the code:
+Sometimes the Cython code compilation may give errors using this installation method, depending on the platform. If errors appear the alternative version (also the most updated one) is installed as follows:
 
 ```bash
 git clone https://github.com/FernandoGaGu/Ant-Colony-Optimisation.git
@@ -45,8 +45,28 @@ git clone https://github.com/FernandoGaGu/Ant-Colony-Optimisation.git
 and after cloning the repository run the setup.py script to compile the code written in Cython using:
 
 ```bash
+cd ./Ant-Colony-Optimisation
 python setup.py build_ext -i
 ```
+At this point you may get warnings related to "Using deprecated NumPy API..." which can be ignored.
+
+Once the above installation is done, you can use the antco library in your scripts by adding the path where it is located:
+
+```python
+import sys
+
+sys.path.append('<PATH TO Ant-Colony-Optimisation DIRECTORY>')
+
+import antco
+```
+
+Or, alternatively, you can install the library locally without having to worry about adding the path in the code via:
+
+```bash
+pip install -e .
+```
+(this last command must be executed inside the cloned GitHub repository)
+
 
 ## Usage
 

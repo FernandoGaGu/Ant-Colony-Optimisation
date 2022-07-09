@@ -126,6 +126,14 @@ class ACO(object):
             the values will be exponentiated only once at the beginning of the execution of the
             algorithm (computationally more efficient).
 
+
+        exp_heuristic: bool, default=None
+            Parameter indicating whether to exponentiate the heuristic at each iteration. By default
+             it is None which indicates that it will depend on whether the precompute_heuristic 
+             parameter has been selected as True (in this case this parameter will be selected as 
+             False) or if it has been selected as False (in this case this parameter will be 
+             selected as True).
+
         Q: float, default None
             Parameter that determines the probability of selecting the next move deterministically 
             by selecting the move to the node that has the highest probability. By default this 
@@ -164,7 +172,24 @@ class ACO(object):
         self._alpha = kwargs.get('alpha', 1.0)
         self._beta = kwargs.get('beta', 1.0)
         self._path_limits = kwargs.get('path_limits', (0, sys.maxsize))
+
+        # If it has not been indicated whether to exponentiate the heuristic in each iteration and it has been 
+        # indicated to pre-exponentiate the heuristic, do not apply the exponentiation. If it has not been indicated 
+        # to pre-exponentiate the heuristic, apply exponentiation in each iteration of the algorithm. If it has been 
+        # indicated to pre-compute the heuristic and exponentiate the heuristic, throw an exception.
         self._precompute_heuristic = kwargs.get('precompute_heuristic', True)
+        self._exp_heuristic = kwargs.get('exp_heuristic', None)
+        if self._exp_heuristic is None:
+            if self._precompute_heuristic:
+                self._exp_heuristic = False 
+            else:
+                self._exp_heuristic = True
+        else:
+            if self._exp_heuristic and self._precompute_heuristic:
+                raise TypeError(
+                    'It is not possible to select to pre-exponentiate the heuristic and also to exponentiate it in '
+                    'every interaction. Parameters A and B cannot be True at the same time.')
+
         self._P = np.zeros(shape=self._H.shape, dtype=np.float64)[:]
         self._P[:] = kwargs.get('pheromone_init', 1.0)
         self._pher_init = kwargs.get('pheromone_init', 1.0)
@@ -410,6 +435,10 @@ class ACO(object):
     @property
     def precompute_heuristic(self):
         return self._precompute_heuristic
+
+    @property
+    def exp_heuristic(self):
+        return self._exp_heuristic
 
     @property
     def pheromones(self) -> np.ndarray:
