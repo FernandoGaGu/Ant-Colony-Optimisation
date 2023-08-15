@@ -677,8 +677,8 @@ def step(ant: Ant, adjacency_matrix: np.ndarray, heuristic: np.ndarray, pheromon
     if exp_heuristic:
         heuristic = np.power(heuristic, beta)
 
-    random.seed(seed)
-    np.random.seed(seed)
+    random.seed(int(seed))
+    np.random.seed(int(seed))
 
     new_ant = Ant(l_min=ant.min_length, l_max=ant.max_length, graph_type=ant.representation,
                   check_params=False)
