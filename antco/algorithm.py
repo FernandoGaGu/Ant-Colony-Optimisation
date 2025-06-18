@@ -328,8 +328,8 @@ def bagOfAnts(aco_obj: ACO, bag_size: int, out_of_bag_size: int = 0,
     scaleScores = aco_obj.scaleScores
 
     if report is None:  # Initialize a Report instance (if not provided)
-        report = Report({'BranchingFactor': {'lambda_values': [0.5]}})
-
+        #report = Report({'BranchingFactor': {'lambda_values': [0.5]}})
+        report = Report()
     if seed is not None:  # Set random state
         random.seed(seed)
         np.random.seed(seed)
